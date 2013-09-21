@@ -39,8 +39,8 @@ void Particles::update(float a_fTimeDelta)
     // Sim particles.
     static float s_fOverallSpeed = 1.f;
     static float s_fNoiseInfluence = .1f;
-    static float s_fNoiseScale = 2.f;
-    static float s_fNoiseRate = .2f;
+    static float s_fNoiseScale = 2.5f;
+    static float s_fNoiseRate = .1f;
     static float s_fMaxParticleLife = 2.f;
     const float cfNoiseEvolve = ofGetElapsedTimef() * s_fNoiseRate;
     
@@ -88,6 +88,6 @@ void Particles::draw()
     for(pIter = activeList.begin(); pIter != activeList.end(); ++pIter)       // Loop through all active particles.
     {
         Particle& p = **pIter;
-        ofCircle(p.pos.x * ofGetWidth(), p.pos.y * ofGetHeight(), 2.f);
+        ofCircle(p.pos.x * ofGetWidth(), p.pos.y * ofGetHeight(), 1.5f);
     }
 }
