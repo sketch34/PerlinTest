@@ -34,7 +34,7 @@ void Particles::update(float a_fTimeDelta)
     const float cfNoiseEvolve = ofGetElapsedTimef();
     static float s_fNoiseRate = 0.3f;
     static float s_fWindScale = 0.3f;
-    static float s_fNoiseScale = 2.f;
+    static float s_fNoiseScale = 5.f;
     
      list<Particle*>::iterator pIter;
      for(pIter = activeList.begin(); pIter != activeList.end(); ++pIter)       // Loop through all active particles.
@@ -64,6 +64,6 @@ void Particles::draw()
     for(pIter = activeList.begin(); pIter != activeList.end(); ++pIter)       // Loop through all active particles.
     {
         Particle& p = **pIter;
-        ofCircle(p.pos.x * ofGetWidth(), p.pos.y * ofGetHeight(), 1.f);
+        ofCircle(p.pos.x * ofGetWidth(), p.pos.y * ofGetHeight(), 2.f);
     }
 }
