@@ -36,48 +36,44 @@ void Particles::update(float a_fTimeDelta)
     }
     
     // Sim particles.
+    static float s_fOverallSpeed = 1.f;
     static float s_fNoiseInfluence = .1f;
     static float s_fNoiseScale = 2.f;
     static float s_fNoiseRate = .2f;
     const float cfNoiseEvolve = ofGetElapsedTimef() * s_fNoiseRate;
 
     
-     list<Particle*>::iterator pIter;
-     for(pIter = activeList.begin(); pIter != activeList.end(); ++pIter)       // Loop through all active particles.
-     {
+    list<Particle*>::iterator pIter;
+    for(pIter = activeList.begin(); pIter != activeList.end();)       // Loop through all active particles.
+    {
         Particle& p = **pIter;
-        
+
         const float noise = s_fNoiseInfluence * ((ofNoise(p.pos.x * s_fNoiseScale + cfNoiseEvolve,
                                                           p.pos.y * s_fNoiseScale + cfNoiseEvolve,
                                                           p.pos.z * s_fNoiseScale + cfNoiseEvolve) * 2.f) - 1.f);
 
-        const float wind = .05f;
-        /*
-        // Optional to noise the wind as well. Don't worry about it, save some CPU.
-        static float s_fWindScale = 1.f;
-        static float s_fWindRate = 0.1f;
-        static float s_fWindBias = 0.1f;    // How much the wind tends left to right.
-        const float wind = (ofNoise(p.pos.x * s_fWindScale + cfNoiseEvolve,
-                                    p.pos.y * s_fWindScale + cfNoiseEvolve,
-                                    p.pos.z * s_fWindScale + cfNoiseEvolve)
-                                    - s_fWindBias) * s_fWindRate;
-        */
-        
+        const float wind = .07f;
+
         /*
          * Compute a simple physics update.
          */
         ofVec3f vForce((noise + wind), noise, noise);
         ofVec3f vAirResist = p.vel * -15.f;    // Crucial step, add air resistance, which is just a negative force proportional to velocity.
-        p.acc = (vForce + vAirResist) * a_fTimeDelta;
+        p.acc = (vForce + vAirResist) * a_fTimeDelta * s_fOverallSpeed;
         p.vel += p.acc;
         p.pos += p.vel;
         p.lifetime += a_fTimeDelta;
-        
-        //if(p.lifetime > 8.f)      // Only allow particles to live for this long.
-        //{
-        //    initParticle(p);
-        //    freeList.splice(freeList.begin(), activeList, pIter);     // Move a particle from the free to the active list.
-        //}
+
+        if(p.lifetime > 2.f)      // Only allow particles to live for this long.
+        {
+            list<Particle*>::iterator toRemove = pIter;
+            ++pIter;
+            freeList.push_back(&p);
+            activeList.erase(toRemove);
+            initParticle(p);
+        }
+        else
+            ++pIter;
     }
 }
 
