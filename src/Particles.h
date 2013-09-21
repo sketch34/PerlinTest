@@ -17,9 +17,10 @@
 
 struct Particle
 {
-    ofVec3f pos;    // Position.
-    ofVec3f vel;    // Velocity.
-    ofVec3f acc;    // Accelleration.
+    ofVec3f pos;        // Position.
+    ofVec3f vel;        // Velocity.
+    ofVec3f acc;        // Accelleration.
+    float   lifetime;   // Time the particle has lived.
 };
 
 class Particles
@@ -47,6 +48,8 @@ inline void Particles::initParticle(Particle& p)
     
     p.vel = ofVec3f::zero();
     p.acc = ofVec3f::zero();
+    
+    p.lifetime = 0.f;
 }
 
 #endif /* defined(__PerlinTest__Particles__) */
