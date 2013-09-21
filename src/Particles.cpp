@@ -21,13 +21,14 @@ void Particles::update(float a_fTimeDelta)
 {
     // Add particles to simulation.
     static float s_fEmissionInterval = 0.01;     // How often to emit a particle group.
+    static float s_fEmissionPulseRate = 2.5f;
     static float s_fLastEmissionTime = 0.f;
-    static int s_iNumToEmit = 10;
+    static int s_iNumToEmit = 15;
     if(!freeList.empty() && s_fLastEmissionTime + s_fEmissionInterval < ofGetElapsedTimef())
     {
         s_fLastEmissionTime = ofGetElapsedTimef();
-        int count = s_iNumToEmit;
-        while(count--)
+        int count = (sin(ofGetElapsedTimef() * s_fEmissionPulseRate) + 1.f) * .5f * (float)s_iNumToEmit;
+        while(count-- && !freeList.empty())
         {
             list<Particle*>::iterator pIter = freeList.begin();
             Particle* pNew = *pIter;
@@ -41,7 +42,6 @@ void Particles::update(float a_fTimeDelta)
     static float s_fNoiseScale = 2.f;
     static float s_fNoiseRate = .2f;
     const float cfNoiseEvolve = ofGetElapsedTimef() * s_fNoiseRate;
-
     
     list<Particle*>::iterator pIter;
     for(pIter = activeList.begin(); pIter != activeList.end();)       // Loop through all active particles.
@@ -50,7 +50,7 @@ void Particles::update(float a_fTimeDelta)
 
         const float noise = s_fNoiseInfluence * ((ofNoise(p.pos.x * s_fNoiseScale + cfNoiseEvolve,
                                                           p.pos.y * s_fNoiseScale + cfNoiseEvolve,
-                                                          p.pos.z * s_fNoiseScale + cfNoiseEvolve) * 2.f) - 1.f);
+                                                          p.pos.z * s_fNoiseScale + cfNoiseEvolve) * 2.f) - 1.f);   // Center noise around the range [-1, 1].
 
         const float wind = .07f;
 
