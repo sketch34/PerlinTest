@@ -17,7 +17,9 @@
 
 struct Particle
 {
-    ofVec3f pos;
+    ofVec3f pos;    // Position.
+    ofVec3f vel;    // Velocity.
+    ofVec3f acc;    // Accelleration.
 };
 
 class Particles
@@ -42,6 +44,9 @@ inline void Particles::initParticle(Particle& p)
     p.pos.x = ofRandom(.2f) + .1f;
     p.pos.y = ofRandom(-.3f, .3f) + 0.5;
     p.pos.z = 0.f;
+    
+    p.vel = ofVec3f::zero();
+    p.acc = ofVec3f::zero();
 }
 
 #endif /* defined(__PerlinTest__Particles__) */

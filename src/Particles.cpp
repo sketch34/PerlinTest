@@ -32,8 +32,8 @@ void Particles::update(float a_fTimeDelta)
     
     // Sim particles.
     const float cfNoiseEvolve = ofGetElapsedTimef();
-    static float s_fNoiseRate = 0.3f;
-    static float s_fWindScale = 0.3f;
+    static float s_fNoiseRate = 0.1f;
+    static float s_fWindScale = 0.1f;
     static float s_fNoiseScale = 5.f;
     
      list<Particle*>::iterator pIter;
@@ -48,7 +48,11 @@ void Particles::update(float a_fTimeDelta)
         
         const float wind = ofNoise(p.pos.x * s_fWindScale, p.pos.y * s_fWindScale);         // 2D is fine for wind. Probably 1D would be fine as well.
         
-        p.pos += ofVec3f((nx + wind) * ft, ny * ft, nz * ft);
+        // Compute a simple physics update.
+        ofVec3f force((nx + wind), ny, nz);
+        p.acc = force * ft;
+        p.vel += p.acc;
+        p.pos += p.vel;
         
         if(p.pos.x > ofGetWidth())      // Gone off edge of screen, recycle.
         {
