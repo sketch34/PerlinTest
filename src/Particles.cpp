@@ -41,6 +41,7 @@ void Particles::update(float a_fTimeDelta)
     static float s_fNoiseInfluence = .1f;
     static float s_fNoiseScale = 2.f;
     static float s_fNoiseRate = .2f;
+    static float s_fMaxParticleLife = 2.f;
     const float cfNoiseEvolve = ofGetElapsedTimef() * s_fNoiseRate;
     
     list<Particle*>::iterator pIter;
@@ -64,7 +65,7 @@ void Particles::update(float a_fTimeDelta)
         p.pos += p.vel;
         p.lifetime += a_fTimeDelta;
 
-        if(p.lifetime > 2.f)      // Only allow particles to live for this long.
+        if(p.lifetime > s_fMaxParticleLife)      // Only allow particles to live for this long.
         {
             list<Particle*>::iterator toRemove = pIter;
             ++pIter;
@@ -79,6 +80,10 @@ void Particles::update(float a_fTimeDelta)
 
 void Particles::draw()
 {
+    static char s_buf[128];
+    sprintf(s_buf, "Particle Count: %d", (int)activeList.size());
+    ofDrawBitmapString(s_buf, 20, 20);
+    
     list<Particle*>::iterator pIter;
     for(pIter = activeList.begin(); pIter != activeList.end(); ++pIter)       // Loop through all active particles.
     {

@@ -2,6 +2,7 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
+    ofSetWindowTitle("Posessed Girl - Perlin Particle Demo (c) 2013 Colours and Numbers");
     ofSetFrameRate(60);
 }
 
