@@ -20,24 +20,27 @@ Particles::Particles()
 void Particles::update(float a_fTimeDelta)
 {
     // Add particles to simulation.
-    static float s_fEmissionInterval = 0.01;     // How often to emit a particle.
+    static float s_fEmissionInterval = 0.01;     // How often to emit a particle group.
     static float s_fLastEmissionTime = 0.f;
+    static int s_iNumToEmit = 10;
     if(!freeList.empty() && s_fLastEmissionTime + s_fEmissionInterval < ofGetElapsedTimef())
     {
         s_fLastEmissionTime = ofGetElapsedTimef();
-        list<Particle*>::iterator pIter = freeList.begin();
-        Particle* pNew = *pIter;
-        activeList.splice(activeList.begin(), freeList, pIter);     // Move a particle from the free to the active list.
+        int count = s_iNumToEmit;
+        while(count--)
+        {
+            list<Particle*>::iterator pIter = freeList.begin();
+            Particle* pNew = *pIter;
+            activeList.splice(activeList.begin(), freeList, pIter);     // Move a particle from the free to the active list.
+        }
     }
     
     // Sim particles.
     static float s_fNoiseInfluence = .1f;
-    static float s_fNoiseScale = 3.f;
-    static float s_fNoiseRate = .1f;
+    static float s_fNoiseScale = 2.f;
+    static float s_fNoiseRate = .2f;
     const float cfNoiseEvolve = ofGetElapsedTimef() * s_fNoiseRate;
 
-    static float s_fWindScale = 1.f;
-    static float s_fWindRate = 0.0f;
     
      list<Particle*>::iterator pIter;
      for(pIter = activeList.begin(); pIter != activeList.end(); ++pIter)       // Loop through all active particles.
@@ -48,7 +51,17 @@ void Particles::update(float a_fTimeDelta)
                                                           p.pos.y * s_fNoiseScale + cfNoiseEvolve,
                                                           p.pos.z * s_fNoiseScale + cfNoiseEvolve) * 2.f) - 1.f);
 
-        const float wind = 0.05f; //ofNoise(p.pos.x * s_fWindScale, p.pos.y * s_fWindScale) * s_fWindRate; // 2D is fine for wind. Probably 1D would be fine as well.
+        const float wind = .05f;
+        /*
+        // Optional to noise the wind as well. Don't worry about it, save some CPU.
+        static float s_fWindScale = 1.f;
+        static float s_fWindRate = 0.1f;
+        static float s_fWindBias = 0.1f;    // How much the wind tends left to right.
+        const float wind = (ofNoise(p.pos.x * s_fWindScale + cfNoiseEvolve,
+                                    p.pos.y * s_fWindScale + cfNoiseEvolve,
+                                    p.pos.z * s_fWindScale + cfNoiseEvolve)
+                                    - s_fWindBias) * s_fWindRate;
+        */
         
         /*
          * Compute a simple physics update.
