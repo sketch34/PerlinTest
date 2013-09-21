@@ -33,7 +33,7 @@ void Particles::update(float a_fTimeDelta)
     // Sim particles.
     static float s_fNoiseInfluence = .1f;
     static float s_fNoiseScale = 3.f;
-    static float s_fNoiseRate = 1.f;
+    static float s_fNoiseRate = .1f;
     const float cfNoiseEvolve = ofGetElapsedTimef() * s_fNoiseRate;
 
     static float s_fWindScale = 1.f;
@@ -44,17 +44,17 @@ void Particles::update(float a_fTimeDelta)
      {
         Particle& p = **pIter;
         
-        const float nx = s_fNoiseInfluence * ((ofNoise(p.pos.x * s_fNoiseScale + cfNoiseEvolve) * 2.f) - 1.f);    // Make noise in range [-1, 1].
-        const float ny = s_fNoiseInfluence * ((ofNoise(p.pos.y * s_fNoiseScale + cfNoiseEvolve) * 2.f) - 1.f);
-        const float nz = s_fNoiseInfluence * ((ofNoise(p.pos.z * s_fNoiseScale + cfNoiseEvolve) * 2.f) - 1.f);
-        
-        const float wind = 0.1f; //ofNoise(p.pos.x * s_fWindScale, p.pos.y * s_fWindScale) * s_fWindRate; // 2D is fine for wind. Probably 1D would be fine as well.
+        const float noise = s_fNoiseInfluence * ((ofNoise(p.pos.x * s_fNoiseScale + cfNoiseEvolve,
+                                                          p.pos.y * s_fNoiseScale + cfNoiseEvolve,
+                                                          p.pos.z * s_fNoiseScale + cfNoiseEvolve) * 2.f) - 1.f);
+
+        const float wind = 0.05f; //ofNoise(p.pos.x * s_fWindScale, p.pos.y * s_fWindScale) * s_fWindRate; // 2D is fine for wind. Probably 1D would be fine as well.
         
         /*
          * Compute a simple physics update.
          */
-        ofVec3f vForce((nx + wind), ny, nz);
-        ofVec3f vAirResist = p.vel * -10.f;    // Crucial step, add air resistance, which is just a negative force proportional to velocity.
+        ofVec3f vForce((noise + wind), noise, noise);
+        ofVec3f vAirResist = p.vel * -15.f;    // Crucial step, add air resistance, which is just a negative force proportional to velocity.
         p.acc = (vForce + vAirResist) * a_fTimeDelta;
         p.vel += p.acc;
         p.pos += p.vel;
