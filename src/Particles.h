@@ -46,7 +46,7 @@ inline void Particles::initParticle(Particle& p)
     p.pos.y = ofRandom(-.3f, .3f) + 0.5;
     p.pos.z = 0.f;
     
-    p.vel = ofVec3f::zero();
+    p.vel = ofVec3f(0.005f, 0.f, 0.f); //::zero();
     p.acc = ofVec3f::zero();
     
     p.lifetime = 0.f;

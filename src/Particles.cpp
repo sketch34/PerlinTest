@@ -37,29 +37,30 @@ void Particles::update(float a_fTimeDelta)
     }
     
     // Sim particles.
-    static float s_fOverallSpeed = 1.f;
-    static float s_fNoiseInfluence = .1f;
-    static float s_fNoiseScale = 2.5f;
-    static float s_fNoiseRate = .1f;
+    static float s_fOverallSpeed = 1.2f;
+    static float s_fNoiseInfluence = .017f;
+    static float s_fNoiseScale = 3.f;
+    static float s_fNoiseRate = .4f;
     static float s_fMaxParticleLife = 2.f;
     const float cfNoiseEvolve = ofGetElapsedTimef() * s_fNoiseRate;
+    //static float s_fNoise2Scale = 5.5f;
     
     list<Particle*>::iterator pIter;
     for(pIter = activeList.begin(); pIter != activeList.end();)       // Loop through all active particles.
     {
         Particle& p = **pIter;
 
-        const float noise = s_fNoiseInfluence * ((ofNoise(p.pos.x * s_fNoiseScale + cfNoiseEvolve,
-                                                          p.pos.y * s_fNoiseScale + cfNoiseEvolve,
-                                                          p.pos.z * s_fNoiseScale + cfNoiseEvolve) * 2.f) - 1.f);   // Center noise around the range [-1, 1].
-
-        const float wind = .07f;
+        float noise = s_fNoiseInfluence * ((ofNoise(p.pos.x * s_fNoiseScale + cfNoiseEvolve,
+                                                    p.pos.y * s_fNoiseScale,
+                                                    p.pos.z * s_fNoiseScale) - .5f) * 2.f);   // Center noise around the range [-1, 1].
+        
+        const float wind = .004f;
 
         /*
          * Compute a simple physics update.
          */
         ofVec3f vForce((noise + wind), noise, noise);
-        ofVec3f vAirResist = p.vel * -15.f;    // Crucial step, add air resistance, which is just a negative force proportional to velocity.
+        ofVec3f vAirResist = p.vel * -2.f;    // Crucial step, add air resistance, which is just a negative force proportional to velocity.
         p.acc = (vForce + vAirResist) * a_fTimeDelta * s_fOverallSpeed;
         p.vel += p.acc;
         p.pos += p.vel;
